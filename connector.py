@@ -101,23 +101,24 @@ def create_ad_hoc_field(cls, db_type):
         if inner_field.startswith('Enum'):
             db_type = 'String'
         # Arrays
-        if inner_field.startswith('Array'):
+        elif inner_field.startswith('Array'):
             inner_field2 = cls.create_ad_hoc_field(inner_field[6 : -1])
             return orm_fields.ArrayField(inner_field2)
         # FixedString
-        if inner_field.startswith('FixedString'):
+        elif inner_field.startswith('FixedString'):
             db_type = 'String' 
         
-        if inner_field == 'LowCardinality(String)':
+        elif inner_field == 'LowCardinality(String)':
             db_type = 'String'
         
-        if inner_field.startswith('DateTime'):
+        elif inner_field.startswith('DateTime'):
             db_type = 'DateTime'
         # Decimal
-        if inner_field.startswith('Decimal'):
+        elif inner_field.startswith('Decimal'):
             nums = [int(n) for n in inner_field[8:-1].split(',')]
             return orm_fields.DecimalField(nums[0], nums[1])
-    
+        else:
+            db_type = inner_field
     # Simple fields
     name = db_type + 'Field'
     if not hasattr(orm_fields, name):
