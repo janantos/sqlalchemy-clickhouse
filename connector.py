@@ -84,14 +84,38 @@ def create_ad_hoc_field(cls, db_type):
     if db_type.startswith('DateTime'):
         db_type = 'DateTime'
 
-    if db_type.startswith('Nullable'):
-        inner_field = cls.create_ad_hoc_field(db_type[9 : -1])
-        return orm_fields.NullableField(inner_field)
-   
     # db_type for Deimal comes like 'Decimal(P, S) string where P is precision and S is scale'
     if db_type.startswith('Decimal'):
         nums = [int(n) for n in db_type[8:-1].split(',')]
         return orm_fields.DecimalField(nums[0], nums[1])
+
+    #  fix for Apache Superset, do not report Nullable felds as Nullable, but as 
+    # if db_type.startswith('Nullable'):
+    #     inner_field = cls.create_ad_hoc_field(db_type[9 : -1])
+    #     return orm_fields.NullableField(inner_field)
+   
+    if db_type.startswith('Nullable'):
+        inner_field = cls.create_ad_hoc_field(db_type[9 : -1])
+        # Enums
+        if inner_field.startswith('Enum'):
+            db_type = 'String'
+        # Arrays
+        if inner_field.startswith('Array'):
+            inner_field2 = cls.create_ad_hoc_field(inner_field[6 : -1])
+            return orm_fields.ArrayField(inner_field2)
+        # FixedString
+        if inner_field.startswith('FixedString'):
+            db_type = 'String' 
+        
+        if inner_field == 'LowCardinality(String)':
+            db_type = 'String'
+        
+        if inner_field.startswith('DateTime'):
+            db_type = 'DateTime'
+        # Decimal
+        if inner_field.startswith('Decimal'):
+            nums = [int(n) for n in inner_field[8:-1].split(',')]
+            return orm_fields.DecimalField(nums[0], nums[1])
     
     # Simple fields
     name = db_type + 'Field'
