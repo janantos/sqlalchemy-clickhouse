@@ -96,6 +96,7 @@ def create_ad_hoc_field(cls, db_type):
    
     if db_type.startswith('Nullable'):
         inner_field = db_type[9 : -1]
+        raise inner_field 
         # Enums
         if inner_field.startswith('Enum'):
             db_type = 'String'
