@@ -14,7 +14,7 @@ from sqlalchemy.sql.elements import quoted_name
 from sqlalchemy.dialects.postgresql.base import PGCompiler, PGIdentifierPreparer
 from sqlalchemy.types import (
     CHAR, DATE, DATETIME, INTEGER, SMALLINT, BIGINT, DECIMAL, TIME,
-    TIMESTAMP, VARCHAR, BINARY, BOOLEAN, FLOAT, REAL)
+    TIMESTAMP, VARCHAR, BINARY, BOOLEAN, FLOAT, REAL, ARRAY)
 
 # Export connector version
 VERSION = (0, 1, 0, None)

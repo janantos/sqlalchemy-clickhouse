@@ -90,34 +90,34 @@ def create_ad_hoc_field(cls, db_type):
         return orm_fields.DecimalField(nums[0], nums[1])
 
     #  fix for Apache Superset, do not report Nullable felds as Nullable, but as 
-    # if db_type.startswith('Nullable'):
-    #     inner_field = cls.create_ad_hoc_field(db_type[9 : -1])
-    #     return orm_fields.NullableField(inner_field)
-   
     if db_type.startswith('Nullable'):
-        inner_field = db_type[9 : -1] 
-        # Enums
-        if inner_field.startswith('Enum'):
-            db_type = 'String'
-        # Arrays
-        elif inner_field.startswith('Array'):
-            inner_field2 = cls.create_ad_hoc_field(inner_field[6 : -1])
-            return orm_fields.ArrayField(inner_field2)
-        # FixedString
-        elif inner_field.startswith('FixedString'):
-            db_type = 'String' 
-        
-        elif inner_field == 'LowCardinality(String)':
-            db_type = 'String'
-        
-        elif inner_field.startswith('DateTime'):
-            db_type = 'DateTime'
-        # Decimal
-        elif inner_field.startswith('Decimal'):
-            nums = [int(n) for n in inner_field[8:-1].split(',')]
-            return orm_fields.DecimalField(nums[0], nums[1])
-        else:
-            db_type = inner_field
+        inner_field = cls.create_ad_hoc_field(db_type[9 : -1])
+        return orm_fields.NullableField(inner_field)
+   
+    # if db_type.startswith('Nullable'):
+    #     inner_field = db_type[9 : -1] 
+    #     # Enums
+    #     if inner_field.startswith('Enum'):
+    #         db_type = 'String'
+    #     # Arrays
+    #     elif inner_field.startswith('Array'):
+    #         inner_field2 = cls.create_ad_hoc_field(inner_field[6 : -1])
+    #         return orm_fields.ArrayField(inner_field2)
+    #     # FixedString
+    #     elif inner_field.startswith('FixedString'):
+    #         db_type = 'String' 
+    #     
+    #     elif inner_field == 'LowCardinality(String)':
+    #         db_type = 'String'
+    #     
+    #     elif inner_field.startswith('DateTime'):
+    #         db_type = 'DateTime'
+    #     # Decimal
+    #     elif inner_field.startswith('Decimal'):
+    #         nums = [int(n) for n in inner_field[8:-1].split(',')]
+    #         return orm_fields.DecimalField(nums[0], nums[1])
+    #     else:
+    #         db_type = inner_field
     # Simple fields
     name = db_type + 'Field'
     if not hasattr(orm_fields, name):
